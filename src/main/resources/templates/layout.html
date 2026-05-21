@@ -13,10 +13,10 @@
             <div class="container">
                 <a class="navbar-brand" href="/tickets">🎫 HelpDesk Pro</a>
                 <div class="navbar-nav ms-auto">
-                    <sec:authorize access="hasRole('ADMIN')">
+                    <th:block th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                         <a class="nav-link" href="/admin/dashboard">📊 Dashboard</a>
                         <a class="nav-link" href="/tickets/new">➕ Nouveau ticket</a>
-                    </sec:authorize>
+                    </th:block>
                     <span class="nav-link text-light">
                         👤 <sec:authentication property="name"/>
                     </span>

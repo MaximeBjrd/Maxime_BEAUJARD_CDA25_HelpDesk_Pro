@@ -13,10 +13,10 @@
             <div class="container">
                 <a class="navbar-brand" href="/tickets">🎫 HelpDesk Pro</a>
                 <div class="navbar-nav ms-auto">
-                    <sec:authorize access="hasRole('ADMIN')">
+                    <th:block th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                         <a class="nav-link" href="/admin/dashboard">📊 Dashboard</a>
                         <a class="nav-link" href="/tickets/new">➕ Nouveau ticket</a>
-                    </sec:authorize>
+                    </th:block>
                     <span class="nav-link text-light">
                         👤 <sec:authentication property="name"/>
                     </span>
@@ -110,7 +110,7 @@
                     </div>
 
                     <!-- Affecter technicien (admin) -->
-                    <sec:authorize access="hasRole('ADMIN')">
+                    <th:block th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
                         <div class="card shadow-sm mb-3" th:if="${ticket.status.name() != 'FERME'}">
                             <div class="card-header"><h6 class="mb-0">👤 Affecter un technicien</h6></div>
                             <div class="card-body">
@@ -137,7 +137,7 @@
                                 </form>
                             </div>
                         </div>
-                    </sec:authorize>
+                    </th:block>
                 </div>
             </div>
         </div>
