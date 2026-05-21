@@ -18,10 +18,7 @@ public class CommentService {
     @Autowired CommentRepository commentRepository;
     @Autowired TicketRepository ticketRepository;
 
-    public CommentService(CommentRepository commentRepository, TicketRepository ticketRepository) {
-        this.commentRepository = commentRepository;
-        this.ticketRepository = ticketRepository;
-    }
+    public CommentService() {}
 
     public List<Comment> getCommentsByTicket(Long ticketId) {
         return commentRepository.findByTicketId(ticketId);

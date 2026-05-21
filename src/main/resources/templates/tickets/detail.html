@@ -17,9 +17,6 @@
                         <a class="nav-link" href="/admin/dashboard">📊 Dashboard</a>
                         <a class="nav-link" href="/tickets/new">➕ Nouveau ticket</a>
                     </th:block>
-                    <span class="nav-link text-light">
-                        👤 <sec:authentication property="name"/>
-                    </span>
                     <form th:action="@{/logout}" method="post" class="d-inline">
                         <button type="submit" class="btn btn-outline-light btn-sm ms-2">Déconnexion</button>
                     </form>
@@ -28,7 +25,13 @@
         </nav>
 
         <div class="container mt-4">
+            <div th:if="${error}" class="alert alert-danger alert-dismissible" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
             <a href="/tickets" class="btn btn-outline-secondary btn-sm mb-3">← Retour</a>
+
             <div class="row">
                 <!-- Infos ticket -->
                 <div class="col-md-8">

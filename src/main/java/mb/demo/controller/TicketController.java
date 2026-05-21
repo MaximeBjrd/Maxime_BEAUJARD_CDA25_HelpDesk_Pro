@@ -2,6 +2,7 @@ package mb.demo.controller;
 
 import mb.demo.model.Ticket;
 import mb.demo.model.User;
+import mb.demo.model.enums.Role;
 import mb.demo.model.enums.TicketStatus;
 import mb.demo.service.CommentService;
 import mb.demo.service.TicketService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/tickets")
@@ -64,8 +66,25 @@ public class TicketController {
     }
 
     @PostMapping("/{id}/status")
-    public String updateStatus(@PathVariable Long id, @RequestParam TicketStatus status) {
-        ticketService.updateStatus(id, status);
+    public String updateStatus(@PathVariable Long id,
+                               @RequestParam TicketStatus status,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            User currentUser = userService.getUserByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+            if(currentUser.getRole() == Role.TECHNICIEN) {
+                Ticket ticket = ticketService.getTicketById(id)
+                        .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
+                if(ticket.getTechnician() == null || !ticket.getTechnician().getId().equals(currentUser.getId())) {
+                    redirectAttributes.addFlashAttribute("error", "Vous ne pouvez modifier que les tickets qui vous ont été affectés.");
+                    return "redirect:/tickets/" + id;
+                }
+            }
+        } catch(RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
         return "redirect:/tickets/" + id;
     }
 

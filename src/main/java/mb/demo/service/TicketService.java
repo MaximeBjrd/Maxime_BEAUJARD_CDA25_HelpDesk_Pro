@@ -16,9 +16,7 @@ public class TicketService {
 
    @Autowired TicketRepository ticketRepository;
 
-    public TicketService(TicketRepository ticketRepository) {
-        this.ticketRepository = ticketRepository;
-    }
+    public TicketService() {}
 
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
@@ -47,12 +45,10 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
 
-        // Règle 4 : ticket fermé non modifiable
         if (ticket.getStatus() == TicketStatus.FERME) {
             throw new RuntimeException("Un ticket fermé ne peut plus être modifié");
         }
 
-        // Règle 3 : EN_COURS uniquement si technicien affecté
         if (newStatus == TicketStatus.EN_COURS && ticket.getTechnician() == null) {
             throw new RuntimeException("Un ticket ne peut pas passer EN_COURS sans technicien affecté");
         }
