@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HelpDesk Pro</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/tickets">🎫 HelpDesk Pro</a>
+                <div class="navbar-nav ms-auto">
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/dashboard">📊 Dashboard</a>
+                        <a class="nav-link" href="/tickets/new">➕ Nouveau ticket</a>
+                    </sec:authorize>
+                    <span class="nav-link text-light">
+                        👤 <sec:authentication property="name"/>
+                    </span>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm ms-2">Déconnexion</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4" th:fragment="content"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

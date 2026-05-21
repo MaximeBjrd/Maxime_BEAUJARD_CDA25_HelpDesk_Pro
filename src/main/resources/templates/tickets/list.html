@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <title>Liste des tickets - HelpDesk Pro</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body class="bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/tickets">🎫 HelpDesk Pro</a>
+                <div class="navbar-nav ms-auto">
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/dashboard">📊 Dashboard</a>
+                        <a class="nav-link" href="/tickets/new">➕ Nouveau ticket</a>
+                    </sec:authorize>
+                    <span class="nav-link text-light">
+                        👤 <sec:authentication property="name"/>
+                    </span>
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-light btn-sm ms-2">Déconnexion</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <h2 class="mb-4">📋 Liste des tickets</h2>
+            <!-- Filtre par statut -->
+            <div class="mb-3">
+                <a href="/tickets" class="btn btn-outline-secondary btn-sm">Tous</a>
+                <a th:each="s : ${statuses}"
+                   th:href="@{/tickets(status=${s})}"
+                   th:text="${s}"
+                   class="btn btn-outline-primary btn-sm ms-1">
+                </a>
+            </div>
+
+            <!-- Tableau -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Titre</th>
+                                <th>Client</th>
+                                <th>Priorité</th>
+                                <th>Statut</th>
+                                <th>Technicien</th>
+                                <th>Date</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(tickets)}">
+                                <td colspan="8" class="text-center text-muted py-4">Aucun ticket trouvé</td>
+                            </tr>
+
+                            <tr th:each="ticket : ${tickets}"
+                                th:classappend="${ticket.late} ? 'table-danger' : ''">
+                                <td th:text="${ticket.id}"></td>
+                                <td>
+                                    <a th:href="@{/tickets/{id}(id=${ticket.id})}"
+                                       th:text="${ticket.title}"
+                                       class="text-decoration-none fw-bold">
+                                    </a>
+                                    <span th:if="${ticket.late}"
+                                          class="badge bg-danger ms-1">EN RETARD</span>
+                                </td>
+                                <td th:text="${ticket.client}"></td>
+                                <td>
+                                    <span th:text="${ticket.priority}"
+                                          th:classappend="${ticket.priority.name() == 'CRITIQUE'} ? 'badge bg-danger' :
+                                                          (${ticket.priority.name() == 'HAUTE'} ? 'badge bg-warning text-dark' :
+                                                          (${ticket.priority.name() == 'MOYENNE'} ? 'badge bg-info text-dark' :
+                                                          'badge bg-secondary'))">
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:text="${ticket.status}"
+                                          th:classappend="${ticket.status.name() == 'OUVERT'} ? 'badge bg-primary' :
+                                                          (${ticket.status.name() == 'EN_COURS'} ? 'badge bg-warning text-dark' :
+                                                          'badge bg-success')">
+                                    </span>
+                                </td>
+                                <td th:text="${ticket.technician != null} ? ${ticket.technician.name} : 'Non assigné'"></td>
+                                <td th:text="${#temporals.format(ticket.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <a th:href="@{/tickets/{id}(id=${ticket.id})}"
+                                       class="btn btn-sm btn-outline-primary">Voir</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
