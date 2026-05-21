@@ -1,6 +1,8 @@
 package mb.demo;
 
 import mb.demo.model.Ticket;
+import mb.demo.model.enums.Category;
+import mb.demo.model.enums.Priority;
 import mb.demo.model.enums.TicketStatus;
 import mb.demo.repository.TicketRepository;
 import mb.demo.service.CommentService;
@@ -15,8 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -29,7 +31,6 @@ class DemoApplicationTests {
 
 	@Test
 	void changeStatusNotAllowedIfNoTechAssigned() {
-
 		Ticket ticket = new Ticket();
 		ticket.setId(1L);
 		ticket.setStatus(TicketStatus.OUVERT);
@@ -46,5 +47,30 @@ class DemoApplicationTests {
 				"Un ticket ne peut pas passer EN_COURS sans technicien affecté",
 				exception.getMessage()
 		);
+	}
+
+	@Test
+	void shouldCreateTicketWithCorrectData() {
+		Ticket ticket = new Ticket();
+		ticket.setTitle("monTitre");
+		ticket.setDescription("maDescription");
+		ticket.setClient("monClient");
+		ticket.setPriority(Priority.BASSE);
+		ticket.setCategory(Category.LOGICIEL);
+		ticket.setStatus(TicketStatus.OUVERT);
+		ticket.setTechnician(null);
+
+		when(ticketRepository.save(any(Ticket.class)))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+
+		Ticket created = ticketService.createTicket(ticket);
+
+		assertEquals("monTitre", created.getTitle());
+		assertEquals("maDescription", created.getDescription());
+		assertEquals("monClient", created.getClient());
+		assertEquals(Priority.BASSE, created.getPriority());
+		assertEquals(Category.LOGICIEL, created.getCategory());
+		assertEquals(TicketStatus.OUVERT, created.getStatus());
+        assertNull(created.getTechnician());
 	}
 }
